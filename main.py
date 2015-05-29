@@ -5,6 +5,7 @@ __author__ = 'ktulhy'
 from interpreter.brainfuck import BFInterpreter, ProgramEnd, OpcodeError
 from libs.native import *
 from libs.math import *
+from lowlevel_opcode.pretty_view import get_opcodes_str
 
 
 def run(interpreter):
@@ -79,7 +80,7 @@ opcodes += \
 
 inter.load_opcodes(opcodes)
 
-print(" Opcodes: {}".format(opcodes.get_opcodes()))
+print(" Opcodes len={}: {}".format(len(opcodes), get_opcodes_str(opcodes.get_opcodes(), 4)))
 print(" Start")
 run(inter)
 print(" Mem:")

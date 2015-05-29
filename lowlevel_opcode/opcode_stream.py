@@ -16,7 +16,7 @@ class OpcodeStream:
                 self._opcodes[-1] = (last_opcode[0], last_opcode[1] + opcode[1])
                 if self._opcodes[-1][1] == 0:
                     del self._opcodes[-1]
-            else:
+            elif opcode[1] != 0:
                 self._opcodes.append(opcode)
         elif opcode[0] == CYCLE_OPEN:
             self._cycle_stack.append(len(self._opcodes))
