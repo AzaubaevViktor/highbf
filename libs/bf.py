@@ -41,8 +41,8 @@ def low_move(x):
 def low_rel_move(frm, to):
     """
     MP == frm -> MP := to
-    :param frm: int, текущее положение MP
-    :param to: int, нужное положение MP
+    :param frm: memcell, текущее положение MP
+    :param to: memcell, нужное положение MP
     :return: list(opcode) UNSAFE
     """
     return low_move(to - frm)
@@ -50,9 +50,9 @@ def low_rel_move(frm, to):
 def low_block(cur, changes, end):
     """
     Находясь в cur, применяет изменения, описаные в changes, и под конец работы оказывается в end
-    :param cur: int
+    :param cur: memcell
     :param changes: dict(int:int)
-    :param end: int
+    :param end: memcell
     :return: list(opcode) UNSAFE
     """
     # may optimise
@@ -73,7 +73,7 @@ def low_block(cur, changes, end):
 def low_cycle(opcodes):
     """
     Небезопасный цикл, раскрывается в [ opcodes ]
-    :param opcodes: list(opcode)
+    :param opcodes: list(opcode) unsafe
     :return: list(opcode) UNSAFE
     """
     return [(CYCLE_OPEN, -1)] + opcodes + [(CYCLE_CLOSE, -1)]
@@ -81,7 +81,13 @@ def low_cycle(opcodes):
 def low_nul():
     """
     mem[MP] := 0
-    Раскрывается в [-]
     :return: list(opcode) absurd safe
     """
     return low_cycle(low_dec())
+
+def low_nop():
+    """
+    Ничего не делает
+    :return: list(opcode) safe
+    """
+    return [(NOP, )]
