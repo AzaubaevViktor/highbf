@@ -6,24 +6,55 @@ from lowlevel_opcode.constants import *
 
 
 def low_add(x):
+    """
+    mem[MP] += x
+    :param x: int
+    :return: list(opcode) absurd safe
+    """
     x %= 256
     if x > 128:
         x -= 256
     return [(ADD, x)]
 
 def low_inc():
+    """
+    mem[MP] += 1
+    :return: list(opcode) absurd safe
+    """
     return [(ADD, 1)]
 
 def low_dec():
+    """
+    mem[MP] -= 1
+    :return: list(opcode) absurd safe
+    """
     return [(ADD, -1)]
 
 def low_move(x):
+    """
+    MP += x
+    :param x: int
+    :return: list(opcode) UNSAFE
+    """
     return [(MOVE, x)]
 
 def low_rel_move(frm, to):
+    """
+    MP == frm -> MP := to
+    :param frm: int, текущее положение MP
+    :param to: int, нужное положение MP
+    :return: list(opcode) UNSAFE
+    """
     return low_move(to - frm)
 
 def low_block(cur, changes, end):
+    """
+    Находясь в cur, применяет изменения, описаные в changes, и под конец работы оказывается в end
+    :param cur: int
+    :param changes: dict(int:int)
+    :param end: int
+    :return: list(opcode) UNSAFE
+    """
     # may optimise
     keys = list(changes.keys())
     keys.sort()
@@ -40,7 +71,17 @@ def low_block(cur, changes, end):
     return ops
 
 def low_cycle(opcodes):
+    """
+    Небезопасный цикл, раскрывается в [ opcodes ]
+    :param opcodes: list(opcode)
+    :return: list(opcode) UNSAFE
+    """
     return [(CYCLE_OPEN, -1)] + opcodes + [(CYCLE_CLOSE, -1)]
 
 def low_nul():
+    """
+    mem[MP] := 0
+    Раскрывается в [-]
+    :return: list(opcode) absurd safe
+    """
     return low_cycle(low_dec())
