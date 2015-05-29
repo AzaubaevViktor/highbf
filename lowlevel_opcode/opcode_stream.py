@@ -36,11 +36,16 @@ class OpcodeStream:
     def generate(self):
         pass
 
+    def get_opcodes(self):
+        return self._opcodes
+
     def __getitem__(self, item):
         return self._opcodes[item]
 
-    def __iadd__(self, opcode):
-        self.put(opcode)
+    def __iadd__(self, opcodes):
+        for opcode in opcodes:
+            self.put(opcode)
+        return self
 
     def __len__(self):
         return len(self._opcodes)

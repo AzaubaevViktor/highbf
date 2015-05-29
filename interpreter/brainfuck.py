@@ -55,6 +55,9 @@ class BFInterpreter:
             elif c == "]":
                 self.opcodes.put((self.CYCLE_CLOSE, -1))
 
+    def load_opcodes(self, opcodes):
+        self.opcodes = opcodes
+
     def state_clean(self):
         self.MP = 0
         self.PC = 0
