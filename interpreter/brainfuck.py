@@ -1,6 +1,11 @@
 __author__ = 'ktulhy'
 
+from lowlevel_opcode import OpcodeStream
+
 class ProgramEnd(Exception):
+    pass
+
+class OpcodeError(Exception):
     pass
 
 class BFInterpreter:
@@ -17,7 +22,7 @@ class BFInterpreter:
 
     def __init__(self):
         self.state_clean()
-        self.opcodes = [(self.NOP, 0)]
+        self.opcodes = OpcodeStream()
         self.cycles = {}
 
     def _clean(self, s):
@@ -25,9 +30,8 @@ class BFInterpreter:
 
     def load(self, s):
         self.cycles = {}
-        self.opcodes = [(self.NOP, 0)]
+        self.opcodes.clean()
 
-        stack = []
         s = self._clean(s)
         pos = 0
 
@@ -35,35 +39,21 @@ class BFInterpreter:
             pos += 1
 
             if c == "+":
-                self._put_opcode((self.ADD, 1))
+                self.opcodes.put((self.ADD, 1))
             elif c == "-":
-                self._put_opcode((self.ADD, -1))
+                self.opcodes.put((self.ADD, -1))
             elif c == ">":
-                self._put_opcode((self.MOVE, 1))
+                self.opcodes.put((self.MOVE, 1))
             elif c == "<":
-                self._put_opcode((self.MOVE, -1))
+                self.opcodes.put((self.MOVE, -1))
             elif c == ".":
-                self._put_opcode((self.WRITE, ))
+                self.opcodes.put((self.WRITE, ))
             elif c == ",":
-                self._put_opcode((self.READ, ))
+                self.opcodes.put((self.READ, ))
             elif c == "[":
-                stack.append(len(self.opcodes))
-                self._put_opcode((self.CYCLE_OPEN, -1))
+                self.opcodes.put((self.CYCLE_OPEN, -1))
             elif c == "]":
-                open_pos = stack.pop()
-                opcode = self.opcodes[open_pos]
-                self.opcodes[open_pos] = (opcode[0], len(self.opcodes))
-                self._put_opcode((self.CYCLE_CLOSE, open_pos))
-
-    def _put_opcode(self, opcode):
-        if opcode[0] == self.ADD or opcode[0] == self.MOVE:
-            if self.opcodes[-1][0] == opcode[0]:
-                last_opcode = self.opcodes[-1]
-                self.opcodes[-1] = (last_opcode[0], last_opcode[1] + opcode[1])
-            else:
-                self.opcodes.append(opcode)
-        else:
-            self.opcodes.append(opcode)
+                self.opcodes.put((self.CYCLE_CLOSE, -1))
 
     def state_clean(self):
         self.MP = 0
@@ -73,6 +63,8 @@ class BFInterpreter:
     def step(self):
         if self.PC >= len(self.opcodes):
             raise ProgramEnd
+        if self.PC < 0:
+            raise OpcodeError
         opcode = self.opcodes[self.PC]
         self.PC += 1
 
@@ -88,6 +80,6 @@ class BFInterpreter:
             if self.mem[self.MP] != 0:
                 self.PC = opcode[1] + 1
         elif opcode[0] == self.WRITE:
-            print(chr(self.mem[self.MP]) + str(self.mem[self.MP]), end="")
+            print(chr(self.mem[self.MP]), end="")
 
 
