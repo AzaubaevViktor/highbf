@@ -25,17 +25,37 @@ print(inter.opcodes.get_opcodes())
 
 run(inter)
 
-print("=================\nMOV:")
+print("=================\nIFELSE:")
 
 inter.state_clean()
 
 opcodes = OpcodeStream()
 
 opcodes += \
-    asm_set_1(4, 33) + \
-    asm_cycle_1(4,
-                asm_add_num_1(4, -1) + \
-                asm_add_num_1(5, 5))
+    asm_set_1(5, 0) + \
+    asm_ifelse_1(5,
+                 asm_set_1(6, 5),
+                 asm_set_1(6, 10),
+                 0, 1)
+
+inter.load_opcodes(opcodes)
+
+print(" Opcodes: {}".format(opcodes.get_opcodes()))
+print(" Start")
+run(inter)
+print(" Mem:")
+print(" {}".format(inter.mem[0:10]))
+
+print("=================\nREPEAT:")
+
+inter.state_clean()
+
+opcodes = OpcodeStream()
+
+opcodes += \
+    asm_set_1(5, 10) + \
+    asm_repeat_1(5,
+                 asm_add_num_1(6, 10))
 
 inter.load_opcodes(opcodes)
 

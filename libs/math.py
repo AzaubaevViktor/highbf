@@ -16,7 +16,6 @@ def math_add_1(bd, ba, overflow, br1, br2):
     ops = \
         asm_set_1(overflow, 0) + \
         asm_repeat_1(ba,
-                     asm_add_num_1(ba, -1) +
                      asm_add_num_1(bd, 1) +
                      asm_ifelse_1(bd,
                                   asm_nop(),
