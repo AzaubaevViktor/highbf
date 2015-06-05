@@ -7,11 +7,11 @@ class Token:
         self.pos = pos
         self.type = None
 
-    def typing(self, f):
-        self.type = f(self)
-
     def __str__(self):
         return "[{}:{}:'{}']".format(self.line, self.pos, self.s)
+
+def _none_typing(token):
+    return None
 
 class Lexer:
     def __init__(self, lines, terminals=" \n\t", non_terminals=""):
@@ -25,6 +25,7 @@ class Lexer:
         self._pos = 1
         self.token_queue = []
         self._is_commented = False
+        self.typing = _none_typing
 
     def get_token(self):
         if len(self.token_queue) == 0:
@@ -88,7 +89,9 @@ class Lexer:
                 token_str += ch
 
         if len(token_str) != 0:
-            self.token_queue.append(Token(token_str, token_line, token_pos))
+            tok = Token(token_str, token_line, token_pos)
+            tok.type = self.typing(tok)
+            self.token_queue.append(tok)
         else:
             self.is_stream_end = True
 
