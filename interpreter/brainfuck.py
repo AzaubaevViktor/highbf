@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from lowlevel_opcode import OpcodeStream
+from compilers.compiler_asmbf.lowlevel_opcode import OpcodeStream
 
 class ProgramEnd(Exception):
     pass

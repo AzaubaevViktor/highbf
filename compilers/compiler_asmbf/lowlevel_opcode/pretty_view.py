@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from lowlevel_opcode.constants import *
+from compilers.compiler_asmbf.lowlevel_opcode.constants import *
 
 def _get_op_str(opcode):
     typ = opcode[0]

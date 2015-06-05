@@ -1,11 +1,10 @@
-from lowlevel_opcode import OpcodeStream
+from compilers.compiler_asmbf.lowlevel_opcode import OpcodeStream
 
 __author__ = 'ktulhy'
 
 from interpreter.brainfuck import BFInterpreter, ProgramEnd, OpcodeError
-from libs.native import *
-from libs.math import *
-from lowlevel_opcode.pretty_view import get_opcodes_str
+from compilers.compiler_asmbf.libs.native import *
+from compilers.compiler_asmbf.lowlevel_opcode import get_opcodes_str
 
 
 def run(interpreter):

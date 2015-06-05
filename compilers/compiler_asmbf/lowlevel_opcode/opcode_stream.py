@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from lowlevel_opcode.constants import *
+from compilers.compiler_asmbf.lowlevel_opcode.constants import *
 
 class OpcodeStream:
     _cycle_stack = []

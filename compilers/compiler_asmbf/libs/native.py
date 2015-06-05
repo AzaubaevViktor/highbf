@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from libs.bf import *
+from compilers.compiler_asmbf.libs.bf import *
 
 """Все библиотеки здесь безопасны с точки зрения адресации в памяти.
  Это значит, что они будут правильно работать с mem[0], и после работы MP = 0"""

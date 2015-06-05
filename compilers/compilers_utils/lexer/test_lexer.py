@@ -2,7 +2,7 @@ from unittest import TestCase
 
 __author__ = 'ktulhy'
 
-from compiler.lexer import Token, Lexer
+from compilers.compilers_utils.lexer import Lexer
 
 class TestLexer(TestCase):
     def test(self):

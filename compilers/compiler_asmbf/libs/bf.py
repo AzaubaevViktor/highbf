@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from lowlevel_opcode.constants import *
+from compilers.compiler_asmbf.lowlevel_opcode.constants import *
 
 """ здесь располагаются небезопасные функции, в начале MP и в конце могут быть разными """
 

@@ -1,6 +1,6 @@
 __author__ = 'ktulhy'
 
-from libs.native import *
+from compilers.compiler_asmbf.libs.native import *
 
 def math_add_1(bd, ba, overflow, br1, br2):
     """
