@@ -5,6 +5,10 @@ class Token:
         self.s = s.rstrip().lstrip()
         self.line = line
         self.pos = pos
+        self.type = None
+
+    def typing(self, f):
+        self.type = f(self)
 
     def __str__(self):
         return "[{}:{}:'{}']".format(self.line, self.pos, self.s)
