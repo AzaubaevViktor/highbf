@@ -10,32 +10,36 @@ class Token:
         return "[{}:{}:'{}']".format(self.line, self.pos, self.s)
 
 class Lexer:
-    def __init__(self, lines, terminals, non_terminals):
-        self.lines = "".join(lines)
-        self.stream = iter("".join(self.lines))
+    def __init__(self, lines, terminals=" \n\t", non_terminals=""):
+        self.stream = iter("".join(lines))
         self.is_stream_end = False
         self.terminals = terminals
         self.non_terminals = non_terminals
+        self.comments = "#"
         self.deferred = None
         self._line = 1
         self._pos = 1
+        self.token_queue = []
+        self._is_commented = False
 
-    def __next__(self):
-        cur_line = self._line
-        cur_pos = self._pos
-        cur_s = ""
+    def get_token(self):
+        if len(self.token_queue) == 0:
+            self._next()
 
-        if self.is_stream_end:
-            self.is_stream_end = False
-            self.stream = iter(self.lines)
-            self._line = 1
-            self._pos = 1
-            raise StopIteration
+        return self.token_queue.pop()
+
+    def push_token(self, token_str, line=-1, pos=-1):
+        self.token_queue.append(Token(token_str, line, pos))
+
+    def _next(self):
+        token_line = self._line
+        token_pos = self._pos
+        token_str = ""
 
         while 1:
             ch = ""
             if self.deferred:
-                cur_s = self.deferred
+                token_str = self.deferred
                 self.deferred = None
                 self._pos += 1
                 break
@@ -52,27 +56,40 @@ class Lexer:
 
             self._pos += 1
 
+            if self._is_commented:
+                if self._is_commented != self._line:
+                    self._is_commented = False
+                else:
+                    continue
+
+
             if ch in self.terminals:
-                if len(cur_s) != 0:
+                if len(token_str) != 0:
                     break
                 else:
-                    cur_pos = self._pos
-                    cur_line = self._line
+                    token_pos = self._pos
+                    token_line = self._line
             elif ch in self.non_terminals:
-                if len(cur_s) != 0:
+                if len(token_str) != 0:
                     self._pos -= 1
                     self.deferred = ch
                     break
                 else:
-                    cur_s = ch
+                    token_str = ch
                     break
+            elif ch in self.comments:
+                self._is_commented = self._line
+                continue
             else:
-                cur_s += ch
+                token_str += ch
 
-        if len(cur_s) != 0:
-            return Token(cur_s, cur_line, cur_pos)
+        if len(token_str) != 0:
+            self.token_queue.append(Token(token_str, token_line, token_pos))
         else:
             self.is_stream_end = True
+
+        if self.is_stream_end:
+            self.token_queue.append(None)
 
     def __iter__(self):
         return self

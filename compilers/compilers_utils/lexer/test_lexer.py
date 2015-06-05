@@ -12,48 +12,55 @@ class TestLexer(TestCase):
     test 123\t     azaza blahblah
 
 
-piu piu piu
+piu piu piu # test azaza
 
 {a } ad{{
 
 
 """
 
-        lex = Lexer(s, " \t\n", "[]{}")
-        print([str(x) for x in iter(lex)])
-        print([str(x) for x in iter(lex)])
+        lex = Lexer(s)
+        lex.non_terminals = "{}"
+        while 1:
+            tok = lex.get_token()
+            if tok:
+                print(tok, end=" ")
+            else:
+                break
 
-        lex_it = iter(lex)
-        next(lex_it)
-        tok = next(lex_it)
+        lex = Lexer(s)
+        lex.non_terminals = "{}"
+
+        lex.get_token()
+        tok = lex.get_token()
         assert tok.s == "123"
         assert tok.pos == 10
         assert tok.line == 4
-        next(lex_it)
-        next(lex_it)
-        next(lex_it)
-        next(lex_it)
-        tok = next(lex_it)
+        lex.get_token()
+        lex.get_token()
+        lex.get_token()
+        lex.get_token()
+        tok = lex.get_token()
         assert tok.s == "piu"
         assert tok.line == 7
         assert tok.pos == 9
 
-        tok = next(lex_it)
+        tok = lex.get_token()
         assert tok.s == "{"
         assert tok.pos == 1
         assert tok.line == 9
 
-        next(lex_it)
-        tok = next(lex_it)
+        lex.get_token()
+        tok = lex.get_token()
         assert tok.s == "}"
         assert tok.pos == 4
 
-        next(lex_it)
-        tok = next(lex_it)
+        lex.get_token()
+        tok = lex.get_token()
         assert tok.s == "{"
         assert tok.pos == 8
 
-        tok = next(lex_it)
+        tok = lex.get_token()
         assert tok.s == "{"
         assert tok.pos == 9
 
