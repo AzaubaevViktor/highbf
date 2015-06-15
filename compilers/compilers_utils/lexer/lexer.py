@@ -1,5 +1,47 @@
 __author__ = 'ktulhy'
 
+class FilePos:
+    def __init__(self):
+        self._line = 1
+        self._pos = 1
+        self._prev_pos = 0
+        self.backward = 0
+
+    def next(self):
+        if self.backward != 0:
+            self.backward -= 1
+        else:
+            self._pos += 1
+
+    def newline(self):
+        self._line += 1
+        self._prev_pos = self._pos
+        self._pos = 0
+
+    def prev(self):
+        self.backward += 1
+
+    @property
+    def line(self):
+        if self.backward == 0:
+            return self._line
+        else:
+            if self._pos - self.backward <= 0:
+                return self._line - 1
+            else:
+                return self._line
+
+    @property
+    def pos(self):
+        if self.backward == 0:
+            return self._pos
+        else:
+            if self._pos - self.backward <= 0:
+                return self._prev_pos - (self._pos - self.backward)
+            else:
+                return self._pos
+
+
 class Token:
     def __init__(self, s, line, pos):
         self.s = s.rstrip().lstrip()
@@ -14,15 +56,14 @@ def _none_typing(token):
     return None
 
 class Lexer:
-    def __init__(self, lines, terminals=" \n\t", non_terminals=""):
+    def __init__(self, lines, terminals=" \t", non_terminals="\n"):
         self.stream = iter("".join(lines))
         self.is_stream_end = False
         self.terminals = terminals
         self.non_terminals = non_terminals
         self.comments = "#"
         self.deferred = None
-        self._line = 1
-        self._pos = 1
+        self._pos = FilePos()
         self.token_queue = []
         self._is_commented = False
         self.typing = _none_typing
@@ -37,17 +78,17 @@ class Lexer:
         self.token_queue.append(Token(token_str, line, pos))
 
     def _next(self):
-        token_line = self._line
-        token_pos = self._pos
+        token_line = self._pos.line
+        token_pos = self._pos.pos
         token_str = ""
 
         while 1:
-            ch = ""
             if self.deferred:
                 token_str = self.deferred
                 self.deferred = None
-                self._pos += 1
-                break
+                self._pos.next()
+
+            ch = ""
 
             try:
                 ch = next(self.stream)
@@ -56,34 +97,32 @@ class Lexer:
                 break
 
             if ch == '\n':
-                self._line += 1
-                self._pos = 0
+                self._pos.newline()
 
-            self._pos += 1
+            self._pos.next()
 
             if self._is_commented:
-                if self._is_commented != self._line:
+                if self._is_commented != self._pos.line:
                     self._is_commented = False
                 else:
                     continue
-
 
             if ch in self.terminals:
                 if len(token_str) != 0:
                     break
                 else:
-                    token_pos = self._pos
-                    token_line = self._line
+                    token_pos = self._pos.pos
+                    token_line = self._pos.line
             elif ch in self.non_terminals:
                 if len(token_str) != 0:
-                    self._pos -= 1
+                    self._pos.prev()
                     self.deferred = ch
                     break
                 else:
                     token_str = ch
                     break
             elif ch in self.comments:
-                self._is_commented = self._line
+                self._is_commented = self._pos.line
                 continue
             else:
                 token_str += ch
@@ -97,6 +136,3 @@ class Lexer:
 
         if self.is_stream_end:
             self.token_queue.append(None)
-
-    def __iter__(self):
-        return self

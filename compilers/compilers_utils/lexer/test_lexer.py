@@ -20,13 +20,15 @@ piu piu piu # test azaza
 """
 
         lex = Lexer(s)
-        lex.non_terminals = "{}"
+        lex.non_terminals = "{}\n"
         while 1:
             tok = lex.get_token()
             if tok:
                 print(tok, end=" ")
             else:
                 break
+
+        print("")
 
         lex = Lexer(s)
         lex.non_terminals = "{}"
