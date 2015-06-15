@@ -28,3 +28,6 @@ class Lexer(shlex.shlex):
         token.typing(self.typing)
         return token
 
+    def push_token(self, tok):
+        super().push_token(tok.text)
+

@@ -1,25 +1,42 @@
+from abc import abstractmethod
+
 __author__ = 'ktulhy'
 
-class TokenQuotedError(Exception):
+
+class TokenError(Exception):
     def __init__(self, token):
         self.token = token
 
     def __str__(self):
-        return "Ошибка в кавычках в токене {}".format(str(self.token))
+        return self._get_error_msg().format(tok=str(self.token))
+
+    @abstractmethod
+    def _get_error_msg(self):
+        return ""
+
+
+class TokenQuotedError(TokenError):
+    def _get_error_msg(self):
+        return "Ошибка в кавычках в токене {}"
+
 
 # AST errors
 
-class TokenOutsideBlock(Exception):
-    def __init__(self, token):
-        self.token = token
+class TokenOutsideBlock(TokenError):
+    def _get_error_msg(self):
+        return "Токен {} находится вне блока"
 
-    def __str__(self):
-        return "Токен {} находится вне блока".format(str(self.token))
 
-class UnknownBlock(Exception):
-    def __init__(self, token):
-        self.token = token
+class UnknownBlock(TokenError):
+    def _get_error_msg(self):
+        return "Неизвестное имя блока: {}"
 
-    def __str__(self):
-        return "Неизвестное имя блока: {}".format(str(self.token))
 
+class NeedNewLine(TokenError):
+    def _get_error_msg(self):
+        return "Ожидается NEWLINE, а тут {}"
+
+
+class NeedBlockOrSubBlock(TokenError):
+    def _get_error_msg(self):
+        return "Ожидается '.' или '..', а тут {}"
