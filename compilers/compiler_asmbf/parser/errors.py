@@ -8,7 +8,7 @@ class TokenError(Exception):
         self.token = token
 
     def __str__(self):
-        return self._get_error_msg().format(tok=str(self.token))
+        return self._get_error_msg().format(str(self.token))
 
     @abstractmethod
     def _get_error_msg(self):

@@ -6,40 +6,45 @@ from .errors import *
 from .token_types import *
 
 def typing_token(token):
-    s = token.s
-    if s == "\n":
+    text = token.text
+    if text == "\n":
         return NEWLINE
-    elif s == '':
+    elif text == "":
         return EOF
-    elif s == "{":
+    elif text == "{":
         return CODEBLOCK_OPEN
-    elif s == "}":
+    elif text == "}":
         return CODEBLOCK_CLOSE
-    elif s == ".":
+    elif text == ".":
         return BLOCK
-    elif s.find("'") == 0:
-        if s.find("'", 1) == len(s) - 1:
+    elif text.find("'") == 0:
+        if text.find("'", 1) == len(text) - 1:
             return CHAR
         else:
             raise TokenQuotedError(token)
-    elif s.find("\"") == 0:
-        if s.find("\"", 1) == len(s) - 1:
+    elif text.find("\"") == 0:
+        if text.find("\"", 1) == len(text) - 1:
             return CHARARR
         else:
             raise TokenQuotedError(token)
-    elif s.find("R") == 0 and s[1:].isdigit():
+    elif text.find("R") == 0 and text[1:].isdigit():
         return REGISTERNAME
-    elif s.isdigit():
+    elif text.isdigit():
         return NUMBER
 
     return STRING
 
 class AsmBFParser:
     def __init__(self, stream):
-        self.lexer = Lexer(stream, non_terminals="{}[]")
+        self.lexer = Lexer()
+        self.lexer.instream = stream
         self.lexer.typing = typing_token
         self.ast = None
 
     def parse(self):
         self.ast = Ast(self.lexer)
+
+    def pretty_print(self):
+        self.ast.pretty_print(0)
+
 
